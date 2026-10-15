@@ -1,0 +1,10 @@
+.build/
+build/
+.swiftpm/
+*.xcuserstate
+.DS_Store
+.env
+.env.*
+*.pem
+*.p12
+*.key
