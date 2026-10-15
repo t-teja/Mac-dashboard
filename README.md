@@ -1,6 +1,6 @@
 # Mac Space Saver
 
-Mac Space Saver is a native macOS menu-bar desk for storage and performance. It lives in the menu bar, opens into a full window, and shows free space, a folder map, CPU and memory, OS images, duplicate files, installed apps, and the local footprint of cloud folders. It can also keep the Mac from idle-sleep while an agent or another background job is running.
+Mac Space Saver is a native macOS menu-bar desk for storage and performance. It lives in the menu bar, opens into a full window, and shows free space, a folder map, CPU and memory, OS images, duplicate files, installed apps, and the local footprint of cloud folders. **Stay awake** can hold the Mac out of idle sleep while an agent or another background job is running. The display can still turn off.
 
 It does not have an account, a network call, or telemetry. Maps, settings, and the cleanup log stay on the Mac. The running app never uploads a file, a path, a hash, or a screenshot.
 
@@ -12,7 +12,7 @@ It does not have an account, a network call, or telemetry. Maps, settings, and t
 
 *Performance. Cores, memory, CPU, disk, and local interface totals. These numbers are read on this Mac.*
 
-The pictures live in `Screenshots/` in this repository. They are static files for the README. The app does not send them anywhere.
+The pictures live in `Screenshots/` in this repository. They are static files for the README. The app does not send them anywhere. Stay awake is shown further down, on the menu-bar panel and the Settings page.
 
 ## Files, permissions, and what stays offline
 
@@ -40,7 +40,7 @@ Personal folders stay off the cleanup list even when a map was allowed to measur
 
 Paths drawn in the desk use `~/…` for anything inside your home folder. The account name is not part of the source. A removal still uses the real path, and that path stays on this Mac unless you export a script yourself.
 
-This repository contains the source, the tests, the icon, and the two screenshots above. It does not contain a saved map, a cleanup log, or a listing of a home folder. Tests use fixture paths under `/Users/ada`.
+This repository contains the source, the tests, the icon, and the screenshots in `Screenshots/`. `Disk.png` is not included. It does not contain a saved map, a cleanup log, or a listing of a home folder. Tests use fixture paths under `/Users/ada`.
 
 ## Install
 
@@ -79,11 +79,27 @@ In Settings you can turn on launch at login. The global shortcut stays off until
 
 ## Stay awake
 
-The menu-bar panel and Settings both have **Stay awake**. While it is on, Mac Space Saver holds a `PreventUserIdleSystemSleep` assertion, so the Mac does not idle-sleep and agents or other background work keep running. The display can still turn off. **Keep the display on** switches to `PreventUserIdleDisplaySleep`, which also holds the system awake and leaves the screen lit.
+**Stay awake** is the keep-awake control. It is in the menu-bar panel and on the Settings page. While it is on, Mac Space Saver holds a `PreventUserIdleSystemSleep` assertion, the same kind of idle-sleep block `caffeinate` uses, so agents and other background work keep running. The display can still turn off. **Keep the display on** switches to `PreventUserIdleDisplaySleep`, which also holds the system awake and leaves the screen lit.
 
-Durations are 30 minutes, 1 hour, 2 hours, until 7:00 in the morning, or until you turn it off. The assertion is released when the time ends, when you turn it off, or when the app quits. It is off until you enable it. It does not change the Energy Saver schedule permanently.
+Durations are 30 minutes, 1 hour, 2 hours, until 7:00 in the morning, or until you turn it off. The assertion is released when the time ends, when you turn it off, or when the app quits. It is off until you enable it, and turning it on does not change the Energy Saver schedule. A dot on the menu-bar planet means it is on. Quitting the app releases it. The assertion is local. It does not contact a server.
 
-Mapping a folder is read-only. It does not follow symlinks, does not read file contents, and does not download iCloud placeholders. Docker is queried only after **Look at Docker**, so opening Images does not start the daemon.
+![Menu bar panel with Stay awake on](Screenshots/Dock.png)
+
+*Menu-bar panel. Stay awake is on, with a duration and the display left free to sleep.*
+
+![Settings, including Stay awake](Screenshots/settings.png)
+
+*Settings. The same Stay awake control, plus the menu-bar metric and alert levels.*
+
+## More of the desk
+
+![OS images](Screenshots/Images.png)
+
+*OS images. Local Android system images. Docker is queried only after Look at Docker.*
+
+![Apps](Screenshots/apps.png)
+
+*Apps. Third-party apps in the Applications folders. Apple's own apps are hidden.*
 
 ## Cleanup safety
 
