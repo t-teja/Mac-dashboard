@@ -2,7 +2,45 @@
 
 Mac Space Saver is a native macOS menu-bar desk for storage and performance. It lives in the menu bar, opens into a full window, and shows free space, a folder map, CPU and memory, OS images, duplicate files, installed apps, and the local footprint of cloud folders. It can also keep the Mac from idle-sleep while an agent or another background job is running.
 
-It does not have an account, a network call, or telemetry. Maps, settings, and the cleanup log stay on the Mac.
+It does not have an account, a network call, or telemetry. Maps, settings, and the cleanup log stay on the Mac. The running app never uploads a file, a path, a hash, or a screenshot.
+
+![Overview](Screenshots/Overview.png)
+
+*Overview. Free space, volumes, and a note when macOS leaves a protected folder unread.*
+
+![Performance](Screenshots/Performance.png)
+
+*Performance. Cores, memory, CPU, disk, and local interface totals. These numbers are read on this Mac.*
+
+The pictures live in `Screenshots/` in this repository. They are static files for the README. The app does not send them anywhere.
+
+## Files, permissions, and what stays offline
+
+Mac Space Saver is offline. There is no account, no server, and no network client in the app. Nothing is sent online: not a folder map, not file names, not file bytes, not a hash, and not a permission you grant.
+
+macOS may still show its own permission dialogs. Those dialogs stay on this Mac. Allowing one does not contact Apple or anyone else from this app. Denying one leaves that folder out of the map.
+
+| What you do | What the app reads | Where it stays |
+| --- | --- | --- |
+| Map home, or choose a folder | Folder names and allocated sizes. File contents are not opened. Symlinks are not followed onto another volume. iCloud placeholders are not downloaded. | `~/Library/Application Support/Mac Space Saver` on this Mac |
+| Deny a Documents, Desktop, Downloads, or Photos prompt | That folder is skipped. The overview says the map was partial. | Nowhere. The folder is not listed. |
+| Allow that prompt | Names and sizes in that folder can appear in the map. | The same local Application Support folder. Revoke it later in System Settings → Privacy & Security. |
+| Duplicate search | File bytes, only inside folders you pick, hashed on this Mac. Placeholders that are not downloaded are skipped. | The hash is kept in memory for that search. The bytes are not stored and are not uploaded. |
+| Cloud page | Local size of iCloud Drive, CloudStorage, and a Google Drive cache, if those folders are already on the Mac. | On screen. There is no delete control and no download. |
+| Apps page | App name, bundle id, and size from `/Applications` and `~/Applications`. | On screen. Apple's own apps are hidden. |
+| Images page | Local installer files, Android image folders, and, only if you press **Look at Docker**, the local Docker image list. | On screen until you add something to the bin and confirm. |
+| Export script | The paths you already confirmed. | A zsh file you save yourself. The app does not run it and does not upload it. |
+| Allow alerts | Nothing from your disk. | A local notification permission. Notices are delivered on this Mac. |
+| Stay awake | Nothing from your disk. | A local power assertion. It ends when the timer ends, you turn it off, or the app quits. |
+| Open at login | Nothing from your disk. | A login item registered on this Mac. |
+
+Full Disk Access is not required. The app does not ask you to turn it on.
+
+Personal folders stay off the cleanup list even when a map was allowed to measure them. Documents, Desktop, Pictures, Movies, Music, Mail, Messages, Photos, keychains, containers, cloud storage, `.git`, and system roots are refused again at removal time. Files that do pass the check go to the Trash only after you confirm.
+
+Paths drawn in the desk use `~/…` for anything inside your home folder. The account name is not part of the source. A removal still uses the real path, and that path stays on this Mac unless you export a script yourself.
+
+This repository contains the source, the tests, the icon, and the two screenshots above. It does not contain a saved map, a cleanup log, or a listing of a home folder. Tests use fixture paths under `/Users/ada`.
 
 ## Install
 
@@ -24,9 +62,7 @@ Click the menu-bar item, then **Open the desk**. To open the window on launch:
 open "build/Mac Space Saver.app" --args --desk
 ```
 
-In Settings you can turn on launch at login. The global shortcut stays off until you enable it, so it does not take a key while you are in another app. Notification permission is requested only after you press **Allow alerts**.
-
-Full Disk Access is not required. If macOS asks for Documents, Photos, or another protected folder, denying the prompt leaves that folder out of the map. The overview then says the map was partial.
+In Settings you can turn on launch at login. The global shortcut stays off until you enable it, so it does not take a key while you are in another app. Notification permission is requested only after you press **Allow alerts**. If macOS asks for Documents, Photos, or another protected folder during a map, denying the prompt leaves that folder out. The overview then says the map was partial.
 
 ## What you can do
 
@@ -96,7 +132,7 @@ Menu bar item  →  glance panel  →  desk window
 
 `ScanStore` keeps the latest map and the previous one under `~/Library/Application Support/Mac Space Saver`, plus a log of bytes you actually freed. Settings live in UserDefaults. Alerts (low free space, memory pressure, sustained CPU, heat, a large jump in reviewable bytes) notify only after you allow them, and the same alert waits 30 minutes before it can notify again.
 
-Paths drawn in the desk are passed through `SecurityGate.displayPath`. A path inside your home folder is shown as `~/…`, and the home folder itself is labeled Home. The account name is not part of the source and is not shown on those rows. Removal still uses the real path, which never leaves the Mac except into a script you export yourself.
+`SecurityGate.displayPath` rewrites a home-folder path to `~/…` before the desk draws it. The home folder itself is labeled Home.
 
 ## Development
 
@@ -109,10 +145,3 @@ zsh scripts/bundle.sh
 `swift test` runs the safety gate, the icicle layout, alert cooldown, the Monday postcard rule, duplicate grouping, the export script (it must not contain `rm`), and the path display. Tests use fixture paths under `/Users/ada`. They do not read your home folder, except one hash test that creates a file in the temp directory and deletes that file.
 
 Do not point a cleanup, `simctl delete`, or `docker image rm` at a machine just to try the runner. The unit tests never call `CleanupRunner.perform`.
-
-## Privacy
-
-- No network. No analytics. No account.
-- File contents are not read during a map. Duplicate search hashes bytes only inside folders you choose, and it skips files that are not downloaded from iCloud.
-- Cloud sizes are local allocated bytes, not the account quota.
-- Saved maps can contain folder paths. They stay in Application Support on this Mac. This repository does not contain a map, a log, or a home-folder listing.
