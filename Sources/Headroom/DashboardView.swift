@@ -31,7 +31,8 @@ struct DashboardView: View {
 
     private var rail: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Headroom")
+            Text(Brand.name)
+                .lineLimit(2)
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundStyle(Theme.brass)
                 .padding(.horizontal, 12)

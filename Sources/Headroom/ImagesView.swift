@@ -84,7 +84,7 @@ struct DuplicatesView: View {
                         Text("Duplicates")
                             .font(.system(size: 28, weight: .semibold, design: .rounded))
                             .foregroundStyle(Theme.cream)
-                        Text("Pick folders. Headroom keeps one copy, re-hashes the others, then moves only those files to the Trash.")
+                        Text("Pick folders. Mac Space Saver keeps one copy, re-hashes the others, then moves only those files to the Trash.")
                             .foregroundStyle(Theme.dim)
                             .font(.system(size: 13))
                     }

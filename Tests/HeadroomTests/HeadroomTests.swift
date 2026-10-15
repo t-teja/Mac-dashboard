@@ -209,6 +209,23 @@ import Testing
     #expect(SecurityGate.displayPath("/Applications/Safari.app", home: home) == "/Applications/Safari.app")
 }
 
+@Test func awakeDeadlineStopsAtMorningOrAFixedSpan() {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+    let morning = Date(timeIntervalSince1970: 1_704_697_200) // 2024-01-08 07:00:00 UTC
+    let before = morning.addingTimeInterval(-60 * 60)
+    let after = morning.addingTimeInterval(60 * 60)
+    let untilToday = AwakeSchedule.deadline(from: before, choice: .untilMorning, calendar: calendar)
+    #expect(untilToday == morning)
+    let untilTomorrow = AwakeSchedule.deadline(from: after, choice: .untilMorning, calendar: calendar)
+    #expect(untilTomorrow == morning.addingTimeInterval(24 * 60 * 60))
+    #expect(AwakeSchedule.deadline(from: before, choice: .untilOff, calendar: calendar) == nil)
+    #expect(AwakeSchedule.deadline(from: before, choice: .minutes30, calendar: calendar) == before.addingTimeInterval(30 * 60))
+    #expect(!AwakeSchedule.isExpired(now: before, until: morning))
+    #expect(AwakeSchedule.isExpired(now: morning, until: morning))
+    #expect(!AwakeSchedule.isExpired(now: morning, until: nil))
+}
+
 @Test func installerGate() {
     let home = "/Users/ada"
     #expect(SecurityGate.osImageTrashReason("/Applications/Install macOS Sequoia.app", home: home) == nil)

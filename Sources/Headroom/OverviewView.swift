@@ -34,11 +34,9 @@ struct OverviewView: View {
                             Text("Some folders were skipped")
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(Theme.cream)
-                            Text("Full Disk Access lets the map see Mail, Messages, and other protected folders. The map stays read-only either way.")
+                            Text("macOS blocked some folders, so they were left unread. Denying those prompts is fine. The map stays on this Mac either way.")
                                 .foregroundStyle(Theme.dim)
                                 .font(.system(size: 13))
-                            Button("Open Privacy settings") { model.openPrivacySettings() }
-                                .buttonStyle(QuietButtonStyle())
                         }
                     }
                 }

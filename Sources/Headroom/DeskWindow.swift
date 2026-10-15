@@ -17,7 +17,7 @@ enum DeskWindow {
             backing: .buffered,
             defer: false
         )
-        window.title = "Headroom"
+        window.title = Brand.name
         window.contentView = host
         window.minSize = NSSize(width: 1040, height: 700)
         window.isReleasedWhenClosed = false
@@ -63,7 +63,7 @@ enum DeskWindow {
             lines.append("windows=" + NSApp.windows.map { "title=\($0.title) visible=\($0.isVisible) level=\($0.level.rawValue)" }.joined(separator: " ; "))
             try? lines.joined(separator: "\n").write(to: URL(fileURLWithPath: path), atomically: true, encoding: .utf8)
             window.orderOut(nil)
-            let stillOpen = NSApp.windows.contains { $0.title == "Headroom" && $0.isVisible }
+            let stillOpen = NSApp.windows.contains { $0.title == Brand.name && $0.isVisible }
             if !stillOpen {
                 NSApp.setActivationPolicy(.accessory)
             }

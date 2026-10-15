@@ -85,6 +85,10 @@ public struct HeadroomSettings: Codable, Equatable, Sendable {
     public var hotkeyEnabled: Bool
     public var hotkeyCode: UInt32
     public var hotkeyModifiers: UInt32
+    public var stayAwake: Bool
+    public var keepDisplayOn: Bool
+    public var awakeChoice: AwakeChoice
+    public var awakeUntil: Date?
 
     public init(
         menuBarMetric: MenuBarMetric = .freeSpace,
@@ -97,7 +101,11 @@ public struct HeadroomSettings: Codable, Equatable, Sendable {
         duplicateMinimumMegabytes: Double = 5,
         hotkeyEnabled: Bool = false,
         hotkeyCode: UInt32 = 0x31,
-        hotkeyModifiers: UInt32 = 6144
+        hotkeyModifiers: UInt32 = 6144,
+        stayAwake: Bool = false,
+        keepDisplayOn: Bool = false,
+        awakeChoice: AwakeChoice = .untilOff,
+        awakeUntil: Date? = nil
     ) {
         self.menuBarMetric = menuBarMetric
         self.showCoresInMenuBar = showCoresInMenuBar
@@ -110,6 +118,10 @@ public struct HeadroomSettings: Codable, Equatable, Sendable {
         self.hotkeyEnabled = hotkeyEnabled
         self.hotkeyCode = hotkeyCode
         self.hotkeyModifiers = hotkeyModifiers
+        self.stayAwake = stayAwake
+        self.keepDisplayOn = keepDisplayOn
+        self.awakeChoice = awakeChoice
+        self.awakeUntil = awakeUntil
     }
 
     public static let standard = HeadroomSettings()

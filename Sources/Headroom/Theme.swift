@@ -1,6 +1,10 @@
 import HeadroomCore
 import SwiftUI
 
+enum Brand {
+    static let name = "Mac Space Saver"
+}
+
 enum Theme {
     static let ink = Color(red: 0.063, green: 0.071, blue: 0.094)
     static let raised = Color(red: 0.102, green: 0.114, blue: 0.153)

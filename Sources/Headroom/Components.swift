@@ -120,6 +120,49 @@ struct QuietButtonStyle: ButtonStyle {
     }
 }
 
+/// Duration choices drawn as labels. A system menu picker paints an empty black bar in the menu-bar panel.
+struct AwakeChoiceControl: View {
+    var selection: AwakeChoice
+    var onSelect: (AwakeChoice) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("For")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Theme.dim)
+            chip(.untilOff)
+            HStack(spacing: 6) {
+                chip(.minutes30)
+                chip(.hour1)
+                chip(.hours2)
+            }
+            chip(.untilMorning)
+        }
+    }
+
+    private func chip(_ choice: AwakeChoice) -> some View {
+        let selected = selection == choice
+        return Button {
+            onSelect(choice)
+        } label: {
+            Text(choice.title)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(selected ? Theme.ink : Theme.cream)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .frame(maxWidth: .infinity)
+                .background(selected ? Theme.brass : Theme.raised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(selected ? Theme.brass : Theme.line, lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 struct StrataStrip: View {
     var slices: [(DiskCategory, Int64)]
 

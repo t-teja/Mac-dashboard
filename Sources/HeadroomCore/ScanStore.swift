@@ -7,7 +7,7 @@ public enum ScanStore {
             in: .userDomainMask,
             appropriateFor: nil,
             create: true
-        ).appendingPathComponent("Headroom", isDirectory: true)
+        ).appendingPathComponent("Mac Space Saver", isDirectory: true)
         try FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
         return base
     }

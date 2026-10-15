@@ -147,8 +147,37 @@ struct SettingsView: View {
                 Text("Settings")
                     .font(.system(size: 28, weight: .semibold, design: .rounded))
                     .foregroundStyle(Theme.cream)
-                Text("Headroom stays on this Mac. It does not have an account, and it does not phone home.")
+                Text("Mac Space Saver stays on this Mac. It does not have an account, and it does not phone home.")
                     .foregroundStyle(Theme.dim)
+
+                DeskCard {
+                    VStack(alignment: .leading, spacing: 12) {
+                        SectionLabel(text: "Stay awake")
+                        Toggle("Keep the Mac from idle sleep", isOn: Binding(
+                            get: { model.settings.stayAwake },
+                            set: { model.setStayAwake($0) }
+                        ))
+                        .toggleStyle(.switch)
+                        .foregroundStyle(Theme.cream)
+                        Text("Use this while an agent or another background job is running. The screen can still sleep. Closing the app lets the Mac sleep on its normal schedule.")
+                            .font(.system(size: 12))
+                            .foregroundStyle(Theme.dim)
+                        AwakeChoiceControl(selection: model.settings.awakeChoice) { choice in
+                            model.setAwakeChoice(choice)
+                        }
+                        Toggle("Keep the display on", isOn: Binding(
+                            get: { model.settings.keepDisplayOn },
+                            set: { value in model.updateSettings { $0.keepDisplayOn = value } }
+                        ))
+                        .toggleStyle(.switch)
+                        .foregroundStyle(Theme.cream)
+                        if model.settings.stayAwake {
+                            Text(AwakeSchedule.status(until: model.settings.awakeUntil))
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundStyle(Theme.brass)
+                        }
+                    }
+                }
 
                 DeskCard {
                     VStack(alignment: .leading, spacing: 12) {
@@ -200,7 +229,7 @@ struct SettingsView: View {
                 DeskCard {
                     VStack(alignment: .leading, spacing: 12) {
                         SectionLabel(text: "Startup and shortcut")
-                        Toggle("Open Headroom at login", isOn: Binding(
+                        Toggle("Open Mac Space Saver at login", isOn: Binding(
                             get: { model.launchAtLogin },
                             set: { model.setLaunchAtLogin($0) }
                         ))

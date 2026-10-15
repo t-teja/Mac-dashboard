@@ -6,7 +6,7 @@ public enum ProcessControl {
         "kernel_task", "launchd", "WindowServer", "loginwindow", "sysmond", "configd",
         "notifyd", "distnoted", "Finder", "Dock", "SystemUIServer", "ControlCenter",
         "NotificationCenter", "Spotlight", "coreaudiod", "bluetoothd", "airportd",
-        "mds", "mds_stores", "Headroom", "cfprefsd", "runningboardd", "logd",
+        "mds", "mds_stores", "MacSpaceSaver", "Headroom", "cfprefsd", "runningboardd", "logd",
         "UserEventAgent", "trustd", "securityd", "amfid", "coreservicesd",
         "powerd", "thermalmonitord", "login", "kernelmanagerd", "watchdogd",
         "opendirectoryd", "securityd", "syspolicyd", "tccd", "secd"
@@ -14,7 +14,7 @@ public enum ProcessControl {
 
     public static func denial(name: String, pid: Int32, uid: UInt32, myPid: Int32, myUid: UInt32) -> String? {
         if pid <= 1 { return "That process is part of the system." }
-        if pid == myPid { return "Headroom will not signal itself." }
+        if pid == myPid { return "Mac Space Saver will not signal itself." }
         if uid != myUid { return "That process belongs to another user." }
         if protectedNames.contains(name) { return "\(name) stays running." }
         return nil

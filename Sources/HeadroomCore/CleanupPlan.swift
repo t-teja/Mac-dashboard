@@ -46,7 +46,7 @@ public enum CleanupPlan {
         let vetted = vet(items, home: home)
         var lines: [String] = []
         lines.append("#!/bin/zsh")
-        lines.append("# Headroom cleanup plan")
+        lines.append("# Mac Space Saver cleanup plan")
         lines.append("# Files go to the Trash. Simulator runtimes and Docker images do not.")
         lines.append("# Review every path before you type DELETE.")
         lines.append("set -euo pipefail")

@@ -5,7 +5,7 @@ let package = Package(
     name: "Headroom",
     platforms: [.macOS(.v14)],
     products: [
-        .executable(name: "Headroom", targets: ["Headroom"])
+        .executable(name: "MacSpaceSaver", targets: ["Headroom"])
     ],
     targets: [
         .target(

@@ -62,6 +62,7 @@ final class AppModel {
     var launchAtLogin = false
 
     @ObservationIgnored private let sampler = SystemSampler()
+    @ObservationIgnored private let awake = AwakeKeeper()
     @ObservationIgnored private let notifier = Notifier()
     @ObservationIgnored private let hotkeys = HotkeyCenter()
     @ObservationIgnored private var sampleTask: Task<Void, Never>?
@@ -92,6 +93,7 @@ final class AppModel {
                 self.presentDesk()
             }
         }
+        applyAwake()
     }
 
     func presentDesk() {
@@ -132,9 +134,30 @@ final class AppModel {
     }
 
     func updateSettings(_ mutate: (inout HeadroomSettings) -> Void) {
+        let before = (settings.stayAwake, settings.keepDisplayOn, settings.awakeUntil)
         mutate(&settings)
         SettingsStore.save(settings)
         applyHotkey()
+        let after = (settings.stayAwake, settings.keepDisplayOn, settings.awakeUntil)
+        if before != after { applyAwake() }
+    }
+
+    func setStayAwake(_ enabled: Bool) {
+        updateSettings { settings in
+            settings.stayAwake = enabled
+            settings.awakeUntil = enabled
+                ? AwakeSchedule.deadline(from: Date(), choice: settings.awakeChoice)
+                : nil
+        }
+    }
+
+    func setAwakeChoice(_ choice: AwakeChoice) {
+        updateSettings { settings in
+            settings.awakeChoice = choice
+            if settings.stayAwake {
+                settings.awakeUntil = AwakeSchedule.deadline(from: Date(), choice: choice)
+            }
+        }
     }
 
     func allowAlerts() {
@@ -169,7 +192,7 @@ final class AppModel {
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
-        panel.message = "Headroom only reads this folder. It does not delete anything while mapping."
+        panel.message = "Mac Space Saver only reads this folder. It does not delete anything while mapping."
         panel.prompt = "Map"
         guard panel.runModal() == .OK, let url = panel.url else { return }
         scan(root: url)
@@ -283,7 +306,7 @@ final class AppModel {
 
     func exportScript() {
         let panel = NSSavePanel()
-        panel.nameFieldStringValue = "Headroom-cleanup.zsh"
+        panel.nameFieldStringValue = "Mac-Space-Saver-cleanup.zsh"
         panel.prompt = "Export"
         panel.message = "The script moves files to the Trash after you type DELETE."
         guard panel.runModal() == .OK, let url = panel.url else { return }
@@ -391,16 +414,6 @@ final class AppModel {
         banner = result.message
     }
 
-    func openPrivacySettings() {
-        let urls = [
-            "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_AllFiles",
-            "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
-        ]
-        for raw in urls {
-            if let url = URL(string: raw), NSWorkspace.shared.open(url) { return }
-        }
-    }
-
     private func startSampling() {
         let sampler = sampler
         sampleTask = Task { [weak self] in
@@ -413,6 +426,7 @@ final class AppModel {
     }
 
     private func ingest(_ snapshot: SystemSnapshot) {
+        expireAwakeIfNeeded(now: snapshot.capturedAt)
         self.snapshot = snapshot
         history.append(HistoryPoint(
             time: snapshot.capturedAt,
@@ -500,6 +514,22 @@ final class AppModel {
         }
     }
 
+    private func applyAwake() {
+        let accepted = awake.update(stayAwake: settings.stayAwake, keepDisplayOn: settings.keepDisplayOn)
+        if settings.stayAwake && !accepted {
+            banner = "macOS did not accept the stay-awake request."
+        }
+    }
+
+    private func expireAwakeIfNeeded(now: Date) {
+        guard settings.stayAwake, AwakeSchedule.isExpired(now: now, until: settings.awakeUntil) else { return }
+        settings.stayAwake = false
+        settings.awakeUntil = nil
+        SettingsStore.save(settings)
+        applyAwake()
+        banner = "Stay awake ended. The Mac can idle-sleep again."
+    }
+
     private func applyHotkey() {
         if settings.hotkeyEnabled {
             hotkeys.register(keyCode: settings.hotkeyCode, modifiers: settings.hotkeyModifiers)
@@ -521,9 +551,9 @@ final class AppModel {
             object: nil,
             queue: .main
         ) { note in
-            guard let window = note.object as? NSWindow, window.title == "Headroom" else { return }
+            guard let window = note.object as? NSWindow, window.title == Brand.name else { return }
             DispatchQueue.main.async {
-                let stillOpen = NSApp.windows.contains { $0.title == "Headroom" && $0.isVisible && $0 != window }
+                let stillOpen = NSApp.windows.contains { $0.title == Brand.name && $0.isVisible && $0 != window }
                 if !stillOpen {
                     NSApp.setActivationPolicy(.accessory)
                 }

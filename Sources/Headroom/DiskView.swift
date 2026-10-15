@@ -51,7 +51,7 @@ struct DiskView: View {
                     }
                 } else {
                     DeskCard {
-                        Text("Map home, or choose another folder. System roots are refused.")
+                        Text("Map home reads folder names and sizes. Denying a Documents or Photos prompt leaves that folder out. File contents stay unread, and nothing is uploaded.")
                             .foregroundStyle(Theme.dim)
                     }
                 }

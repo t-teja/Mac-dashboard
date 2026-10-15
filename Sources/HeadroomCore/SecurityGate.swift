@@ -1,6 +1,6 @@
 import Foundation
 
-/// The last word on what Headroom is willing to remove.
+/// The last word on what Mac Space Saver is willing to remove.
 /// A matching cleanup rule is not enough. This gate has to agree, again, at the moment of removal.
 public enum SecurityGate {
     public static let regenerableNames: Set<String> = [
@@ -16,7 +16,7 @@ public enum SecurityGate {
             character == "\0" || character == "\"" || character == "'" || character == "\\"
                 || character == "\n" || character == "\r" || character == "$" || character == "`"
         }) {
-            return "That path contains characters Headroom will not remove."
+            return "That path contains characters Mac Space Saver will not remove."
         }
         let path = standardized(raw)
         if !path.hasPrefix("/") { return "Path must be absolute." }
@@ -69,7 +69,7 @@ public enum SecurityGate {
         if bundleID.isEmpty || bundleID.hasPrefix("com.apple.") {
             return "Apple system apps stay installed."
         }
-        guard isSafeBundleID(bundleID) else { return "That bundle id is not one Headroom will remove." }
+        guard isSafeBundleID(bundleID) else { return "That bundle id is not one Mac Space Saver will remove." }
         let path = standardized(raw)
         if !path.hasSuffix(".app") { return "That is not an app." }
         if path.contains(".app/") { return "That app is inside another app." }
@@ -89,7 +89,7 @@ public enum SecurityGate {
 
     public static func leftoverReason(_ raw: String, bundleID: String, home: String) -> String? {
         guard isSafeBundleID(bundleID), !bundleID.hasPrefix("com.apple.") else {
-            return "That bundle id is not one Headroom will remove."
+            return "That bundle id is not one Mac Space Saver will remove."
         }
         let path = standardized(raw)
         let home = standardized(home)
@@ -152,7 +152,7 @@ public enum SecurityGate {
             }
             return nil
         }
-        return "That is not an OS image Headroom knows how to remove."
+        return "That is not an OS image Mac Space Saver knows how to remove."
     }
 
     public static func validRuntimeIdentifier(_ raw: String) -> Bool {
@@ -196,7 +196,7 @@ public enum SecurityGate {
             character == "\0" || character == "\"" || character == "'" || character == "\\"
                 || character == "\n" || character == "\r" || character == "$" || character == "`"
         }) {
-            return "That path contains characters Headroom will not remove."
+            return "That path contains characters Mac Space Saver will not remove."
         }
         return nil
     }
